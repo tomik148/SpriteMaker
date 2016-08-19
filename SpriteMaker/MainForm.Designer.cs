@@ -28,6 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem(new string[] {
+            "",
+            ""}, -1);
+            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("");
+            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("");
+            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("");
             this.pictureBoxMain = new System.Windows.Forms.PictureBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.selectPivot = new System.Windows.Forms.ComboBox();
@@ -95,17 +101,6 @@
             // 
             this.selectPivot.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.selectPivot.FormattingEnabled = true;
-            this.selectPivot.Items.AddRange(new object[] {
-            "Center",
-            "Top left",
-            "Top",
-            "Top right",
-            "Left",
-            "Right",
-            "Bottom left",
-            "Bottom",
-            "Bottom right",
-            "Custom"});
             this.selectPivot.Location = new System.Drawing.Point(9, 19);
             this.selectPivot.Name = "selectPivot";
             this.selectPivot.Size = new System.Drawing.Size(185, 21);
@@ -307,6 +302,7 @@
             this.textBoxName.Name = "textBoxName";
             this.textBoxName.Size = new System.Drawing.Size(185, 20);
             this.textBoxName.TabIndex = 1;
+            this.textBoxName.TextChanged += new System.EventHandler(this.textBoxName_TextChanged);
             // 
             // flowLayoutPanel1
             // 
@@ -379,6 +375,7 @@
             this.button1.TabIndex = 12;
             this.button1.Text = "Make XML";
             this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // listView1
             // 
@@ -417,6 +414,12 @@
             // 
             // listView2
             // 
+            listViewItem1.StateImageIndex = 0;
+            this.listView2.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
+            listViewItem1,
+            listViewItem2,
+            listViewItem3,
+            listViewItem4});
             this.listView2.Location = new System.Drawing.Point(6, 17);
             this.listView2.MultiSelect = false;
             this.listView2.Name = "listView2";
@@ -425,6 +428,7 @@
             this.listView2.TabIndex = 10;
             this.listView2.UseCompatibleStateImageBehavior = false;
             this.listView2.View = System.Windows.Forms.View.List;
+            this.listView2.SelectedIndexChanged += new System.EventHandler(this.listView2_SelectedIndexChanged);
             // 
             // button2
             // 
@@ -434,6 +438,7 @@
             this.button2.TabIndex = 101;
             this.button2.Text = "Make XML";
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // MainForm
             // 

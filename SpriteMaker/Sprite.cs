@@ -24,21 +24,21 @@ namespace SpriteMaker
 {
     class Sprite
     {
-        string name;
+        public string name;
 
-        int x;
-        int y;
-        int width;
-        int height;
+        public int x;
+        public int y;
+        public int width;
+        public int height;
 
-        int left;
-        int right;
-        int top;
-        int bottom;
+        public int left;
+        public int right;
+        public int top;
+        public int bottom;
 
-        Pivot pivot;
+        public Pivot pivot;
 
-        int pixelsPerUnit;
+        public int pixelsPerUnit;
 
         public Sprite(string name, int x, int y, int w, int h, Pivot p, int ppu, int l = 0, int r = 0, int t = 0, int b = 0)
         {
