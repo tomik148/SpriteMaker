@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.IO;
+using System.Drawing;
 
 enum Pivot
 {
@@ -68,6 +69,11 @@ namespace SpriteMaker
             xw.WriteEndElement();
 
             return xw;
+        }
+
+        public Rectangle getRect()
+        {
+            return new Rectangle(x + height, MainForm.instance.fixY(y), width, height);
         }
 
         public override string ToString()

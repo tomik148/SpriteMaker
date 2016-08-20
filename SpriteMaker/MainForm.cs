@@ -14,16 +14,19 @@ namespace SpriteMaker
 {
     public partial class MainForm : Form
     {
-
+        public static MainForm instance;
         string imagePath = "";
+        Image image;
         bool multiSprites = false;
         List<Sprite> sprites;
+        bool dragging = false;
 
         public MainForm()
         {
             InitializeComponent();
             selectPivot.DataSource = Enum.GetValues(typeof(Pivot));
             sprites = new List<Sprite>();
+            instance = this;
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
@@ -49,10 +52,10 @@ namespace SpriteMaker
 
         private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
         {
-            //MessageBox.Show(openFileDialog1.FileName);
             imagePath = openFileDialog1.FileName;
             //TODO: Check for XML file and load it
-            pictureBoxMain.Image = new Bitmap(imagePath);
+            image = new Bitmap(imagePath);
+            pictureBoxMain.Image = image;
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -81,10 +84,16 @@ namespace SpriteMaker
             }
             resetTextBoxes();
             
+            
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
+            if(imagePath == "")
+            {
+                MessageBox.Show("Please load image.");
+                return;
+            }
             makeXMLFile();
         }
 
@@ -95,6 +104,7 @@ namespace SpriteMaker
             {
                 listView2.Items.Add(item.ToString());
             }
+
         }
 
         bool addSpriteToList()
@@ -207,7 +217,7 @@ namespace SpriteMaker
             listView2.SelectedIndices.CopyTo(a,0);
             int index = a[0];
             loadSprite(sprites[index]);
-            
+            drawRectangle(sprites[index].getRect());
         }
 
         private void textBoxName_TextChanged(object sender, EventArgs e)
@@ -225,6 +235,66 @@ namespace SpriteMaker
 
             //loadSprite(s);
             button1.Text = "Update Sprite";
+        }
+
+        void drawRectangle(Rectangle rect)
+        {
+            //pictureBoxMain.Image = image;
+            Graphics g = pictureBoxMain.CreateGraphics();
+            g.FillRectangle(Brushes.Red, rect.X, rect.Y, 10, 10);
+            g.FillRectangle(Brushes.Blue, rect.X, rect.Y + rect.Height, 10, 10);
+            g.FillRectangle(Brushes.Green, rect.X + rect.Width, rect.Y , 10, 10);
+            g.FillRectangle(Brushes.Yellow, rect.X + rect.Width, rect.Y + rect.Height, 10, 10);
+
+            g.DrawRectangle(Pens.Black, rect);
+        }
+
+        private void pictureBoxMain_MouseDown(object sender, MouseEventArgs e)
+        {
+            dragging = true;
+            textBoxX.Text = e.X.ToString();
+            textBoxY.Text = fixY(e.Y).ToString();
+        }
+
+        private void pictureBoxMain_MouseUp(object sender, MouseEventArgs e)
+        {
+            dragging = false;
+            updateWH(e, true);
+        }
+
+        void updateWH(MouseEventArgs e, bool validate)
+        {
+            int w = e.X - int.Parse(textBoxX.Text);
+            int h = fixY(e.Y) - int.Parse(textBoxY.Text);
+            if (validate)
+                validateWH(ref w, ref h);
+            textBoxW.Text = w.ToString();
+            textBoxH.Text = h.ToString();
+        }
+
+        void validateWH(ref int w, ref int h)
+        {
+            if(w < 0)
+            {
+                textBoxX.Text = (int.Parse(textBoxX.Text) + w).ToString();
+                w = Math.Abs(w);
+            }
+            if(h < 0)
+            {
+                textBoxY.Text = (int.Parse(textBoxY.Text) + h).ToString();
+                h = Math.Abs(h);
+            }
+        }
+
+        public int fixY(int y)
+        {
+            return Math.Abs(y - pictureBoxMain.Height);
+        }
+
+        private void pictureBoxMain_MouseMove(object sender, MouseEventArgs e)
+        {
+            if(dragging)
+                updateWH(e, false);
         }
         /*
 
