@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
 
-
 namespace SpriteMaker
 {
     public partial class MainForm : Form
@@ -27,6 +26,11 @@ namespace SpriteMaker
             selectPivot.DataSource = Enum.GetValues(typeof(Pivot));
             sprites = new List<Sprite>();
             instance = this;
+        }
+
+        public int fixY(int y)
+        {
+            return Math.Abs(y - pictureBoxMain.Height);
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
@@ -53,7 +57,8 @@ namespace SpriteMaker
         private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
         {
             imagePath = openFileDialog1.FileName;
-            //TODO: Check for XML file and load it
+
+            // TODO: Check for XML file and load it
             image = new Bitmap(imagePath);
             pictureBoxMain.Image = image;
         }
@@ -70,6 +75,7 @@ namespace SpriteMaker
                 MessageBox.Show("Please load image.");
                 return;
             }
+
             if(multiSprites)
             {
                 addSpriteToList();
@@ -79,12 +85,10 @@ namespace SpriteMaker
                 if(addSpriteToList())
                 {
                     makeXMLFile();
-                } 
-                
+                }
             }
+
             resetTextBoxes();
-            
-            
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -94,6 +98,7 @@ namespace SpriteMaker
                 MessageBox.Show("Please load image.");
                 return;
             }
+
             makeXMLFile();
         }
 
@@ -104,7 +109,6 @@ namespace SpriteMaker
             {
                 listView2.Items.Add(item.ToString());
             }
-
         }
 
         bool addSpriteToList()
@@ -114,40 +118,46 @@ namespace SpriteMaker
                 MessageBox.Show("Name is required.");
                 return false;
             }
+
             if(textBox1.Text == "" || textBox1.Text == "0")
             {
                 MessageBox.Show("Pixel per unit is required.");
                 return false;
             }
+
             if(textBoxW.Text == "")
             {
                 MessageBox.Show("Width is required.");
                 return false;
             }
+
             if(textBoxH.Text == "")
             {
                 MessageBox.Show("Height is required.");
                 return false;
             }
+
             if(textBoxX.Text == "")
             {
                 MessageBox.Show("X is required.");
                 return false;
             }
+
             if(textBoxY.Text == "")
             {
                 MessageBox.Show("Y is required.");
                 return false;
             }
 
-            if(textBoxW.Text == "0" || textBoxH.Text == "0" )
+            if(textBoxW.Text == "0" || textBoxH.Text == "0")
             {
                 MessageBox.Show("Height or width cant be 0.");
                 return false;
             }
 
+            Rectangle rect = new Rectangle();
 
-            Sprite s = new Sprite(textBoxName.Text, int.Parse(textBoxX.Text), int.Parse(textBoxY.Text), int.Parse(textBoxW.Text), int.Parse(textBoxH.Text), (Pivot)selectPivot.SelectedValue, int.Parse(textBox1.Text));
+            Sprite s = new Sprite(textBoxName.Text, int.Parse(textBoxX.Text), int.Parse(textBoxY.Text), int.Parse(textBoxW.Text), int.Parse(textBoxH.Text), (Pivot)selectPivot.SelectedValue, int.Parse(textBox1.Text), rect);
 
             Sprite f = sprites.Find((x) => { return x.name == textBoxName.Text; });
             if(f != null)
@@ -175,6 +185,7 @@ namespace SpriteMaker
 
         void resetTextBoxes()
         {
+            // TODO: load name from path
             textBoxName.Text = "";
             textBoxX.Text = "0";
             textBoxY.Text = "0";
@@ -193,6 +204,7 @@ namespace SpriteMaker
                 MessageBox.Show("Please load image.");
                 return;
             }
+
             StringBuilder path = new StringBuilder(imagePath);
             path.Replace(".png", ".xml");
             path.Replace(".jpg", ".xml");
@@ -205,6 +217,7 @@ namespace SpriteMaker
             {
                 item.getXml(xw);
             }
+
             xw.WriteEndElement();
             xw.WriteEndDocument();
             xw.Close();
@@ -214,7 +227,7 @@ namespace SpriteMaker
         private void listView2_SelectedIndexChanged(object sender, EventArgs e)
         {
             int[] a = new int[1];
-            listView2.SelectedIndices.CopyTo(a,0);
+            listView2.SelectedIndices.CopyTo(a, 0);
             int index = a[0];
             loadSprite(sprites[index]);
             drawRectangle(sprites[index].getRect());
@@ -230,20 +243,19 @@ namespace SpriteMaker
                 {
                     button1.Text = "Add Sprite";
                 }
+
                 return;
             }
 
-            //loadSprite(s);
             button1.Text = "Update Sprite";
         }
 
         void drawRectangle(Rectangle rect)
         {
-            //pictureBoxMain.Image = image;
             Graphics g = pictureBoxMain.CreateGraphics();
             g.FillRectangle(Brushes.Red, rect.X, rect.Y, 10, 10);
             g.FillRectangle(Brushes.Blue, rect.X, rect.Y + rect.Height, 10, 10);
-            g.FillRectangle(Brushes.Green, rect.X + rect.Width, rect.Y , 10, 10);
+            g.FillRectangle(Brushes.Green, rect.X + rect.Width, rect.Y, 10, 10);
             g.FillRectangle(Brushes.Yellow, rect.X + rect.Width, rect.Y + rect.Height, 10, 10);
 
             g.DrawRectangle(Pens.Black, rect);
@@ -267,50 +279,35 @@ namespace SpriteMaker
             int w = e.X - int.Parse(textBoxX.Text);
             int h = fixY(e.Y) - int.Parse(textBoxY.Text);
             if (validate)
+            {
                 validateWH(ref w, ref h);
+            }
+
             textBoxW.Text = w.ToString();
             textBoxH.Text = h.ToString();
         }
 
         void validateWH(ref int w, ref int h)
         {
-            if(w < 0)
+            if (w < 0)
             {
                 textBoxX.Text = (int.Parse(textBoxX.Text) + w).ToString();
                 w = Math.Abs(w);
             }
-            if(h < 0)
+
+            if (h < 0)
             {
                 textBoxY.Text = (int.Parse(textBoxY.Text) + h).ToString();
                 h = Math.Abs(h);
             }
         }
 
-        public int fixY(int y)
-        {
-            return Math.Abs(y - pictureBoxMain.Height);
-        }
-
         private void pictureBoxMain_MouseMove(object sender, MouseEventArgs e)
         {
-            if(dragging)
+            if (dragging)
+            {
                 updateWH(e, false);
+            }
         }
-        /*
-
-Center
-Top left
-Top
-Top right
-Left
-Right
-Bottom left
-Bottom
-Bottom right
-Custom
-
-*/
-
-
     }
 }
