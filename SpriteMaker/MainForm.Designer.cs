@@ -10,13 +10,14 @@
         /// <summary>
         /// Clean up any resources being used.
         /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        /// <param name="disposing">True if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if(disposing && (components != null))
+            if (disposing && (components != null))
             {
                 components.Dispose();
             }
+
             base.Dispose(disposing);
         }
 
@@ -53,16 +54,15 @@
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.textBoxName = new System.Windows.Forms.TextBox();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.buttonLoadImage = new System.Windows.Forms.Button();
+            this.multiSprite = new System.Windows.Forms.CheckBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
-            this.listView1 = new System.Windows.Forms.ListView();
-            this.multiSprite = new System.Windows.Forms.CheckBox();
-            this.buttonLoadImage = new System.Windows.Forms.Button();
             this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.listView2 = new System.Windows.Forms.ListView();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.listView2 = new System.Windows.Forms.ListView();
             this.button2 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxMain)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -70,9 +70,9 @@
             this.groupBox1.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.flowLayoutPanel2.SuspendLayout();
-            this.panel1.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -84,6 +84,10 @@
             this.pictureBoxMain.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.pictureBoxMain.TabIndex = 0;
             this.pictureBoxMain.TabStop = false;
+            this.pictureBoxMain.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBoxMain_Paint);
+            this.pictureBoxMain.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBoxMain_MouseDown);
+            this.pictureBoxMain.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBoxMain_MouseMove);
+            this.pictureBoxMain.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBoxMain_MouseUp);
             // 
             // openFileDialog1
             // 
@@ -95,17 +99,6 @@
             // 
             this.selectPivot.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.selectPivot.FormattingEnabled = true;
-            this.selectPivot.Items.AddRange(new object[] {
-            "Center",
-            "Top left",
-            "Top",
-            "Top right",
-            "Left",
-            "Right",
-            "Bottom left",
-            "Bottom",
-            "Bottom right",
-            "Custom"});
             this.selectPivot.Location = new System.Drawing.Point(9, 19);
             this.selectPivot.Name = "selectPivot";
             this.selectPivot.Size = new System.Drawing.Size(185, 21);
@@ -307,6 +300,7 @@
             this.textBoxName.Name = "textBoxName";
             this.textBoxName.Size = new System.Drawing.Size(185, 20);
             this.textBoxName.TabIndex = 1;
+            this.textBoxName.TextChanged += new System.EventHandler(this.textBoxName_TextChanged);
             // 
             // flowLayoutPanel1
             // 
@@ -322,6 +316,37 @@
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Size = new System.Drawing.Size(209, 418);
             this.flowLayoutPanel1.TabIndex = 5;
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.buttonLoadImage);
+            this.panel1.Controls.Add(this.multiSprite);
+            this.panel1.Location = new System.Drawing.Point(3, 3);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(194, 30);
+            this.panel1.TabIndex = 10;
+            // 
+            // buttonLoadImage
+            // 
+            this.buttonLoadImage.Location = new System.Drawing.Point(3, 3);
+            this.buttonLoadImage.Name = "buttonLoadImage";
+            this.buttonLoadImage.Size = new System.Drawing.Size(75, 23);
+            this.buttonLoadImage.TabIndex = 0;
+            this.buttonLoadImage.Text = "Load Image";
+            this.buttonLoadImage.UseVisualStyleBackColor = true;
+            this.buttonLoadImage.Click += new System.EventHandler(this.buttonLoadImage_Click);
+            // 
+            // multiSprite
+            // 
+            this.multiSprite.AutoSize = true;
+            this.multiSprite.Location = new System.Drawing.Point(84, 7);
+            this.multiSprite.Name = "multiSprite";
+            this.multiSprite.Size = new System.Drawing.Size(97, 17);
+            this.multiSprite.TabIndex = 100;
+            this.multiSprite.TabStop = false;
+            this.multiSprite.Text = "Multiple Sprites";
+            this.multiSprite.UseVisualStyleBackColor = true;
+            this.multiSprite.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
             // 
             // groupBox5
             // 
@@ -348,40 +373,7 @@
             this.button1.TabIndex = 12;
             this.button1.Text = "Make XML";
             this.button1.UseVisualStyleBackColor = true;
-            // 
-            // listView1
-            // 
-            this.listView1.FullRowSelect = true;
-            this.listView1.Location = new System.Drawing.Point(0, 0);
-            this.listView1.MultiSelect = false;
-            this.listView1.Name = "listView1";
-            this.listView1.ShowGroups = false;
-            this.listView1.Size = new System.Drawing.Size(147, 343);
-            this.listView1.TabIndex = 6;
-            this.listView1.UseCompatibleStateImageBehavior = false;
-            this.listView1.View = System.Windows.Forms.View.List;
-            // 
-            // multiSprite
-            // 
-            this.multiSprite.AutoSize = true;
-            this.multiSprite.Location = new System.Drawing.Point(84, 7);
-            this.multiSprite.Name = "multiSprite";
-            this.multiSprite.Size = new System.Drawing.Size(97, 17);
-            this.multiSprite.TabIndex = 100;
-            this.multiSprite.TabStop = false;
-            this.multiSprite.Text = "Multiple Sprites";
-            this.multiSprite.UseVisualStyleBackColor = true;
-            this.multiSprite.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
-            // 
-            // buttonLoadImage
-            // 
-            this.buttonLoadImage.Location = new System.Drawing.Point(3, 3);
-            this.buttonLoadImage.Name = "buttonLoadImage";
-            this.buttonLoadImage.Size = new System.Drawing.Size(75, 23);
-            this.buttonLoadImage.TabIndex = 0;
-            this.buttonLoadImage.Text = "Load Image";
-            this.buttonLoadImage.UseVisualStyleBackColor = true;
-            this.buttonLoadImage.Click += new System.EventHandler(this.buttonLoadImage_Click);
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // flowLayoutPanel2
             // 
@@ -393,26 +385,6 @@
             this.flowLayoutPanel2.Name = "flowLayoutPanel2";
             this.flowLayoutPanel2.Size = new System.Drawing.Size(421, 424);
             this.flowLayoutPanel2.TabIndex = 9;
-            // 
-            // panel1
-            // 
-            this.panel1.Controls.Add(this.buttonLoadImage);
-            this.panel1.Controls.Add(this.multiSprite);
-            this.panel1.Location = new System.Drawing.Point(3, 3);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(194, 30);
-            this.panel1.TabIndex = 10;
-            // 
-            // listView2
-            // 
-            this.listView2.Location = new System.Drawing.Point(6, 17);
-            this.listView2.MultiSelect = false;
-            this.listView2.Name = "listView2";
-            this.listView2.ShowGroups = false;
-            this.listView2.Size = new System.Drawing.Size(188, 365);
-            this.listView2.TabIndex = 10;
-            this.listView2.UseCompatibleStateImageBehavior = false;
-            this.listView2.View = System.Windows.Forms.View.List;
             // 
             // groupBox6
             // 
@@ -426,6 +398,18 @@
             this.groupBox6.Text = "Sprites";
             this.groupBox6.Visible = false;
             // 
+            // listView2
+            // 
+            this.listView2.Location = new System.Drawing.Point(6, 17);
+            this.listView2.MultiSelect = false;
+            this.listView2.Name = "listView2";
+            this.listView2.ShowGroups = false;
+            this.listView2.Size = new System.Drawing.Size(188, 365);
+            this.listView2.TabIndex = 10;
+            this.listView2.UseCompatibleStateImageBehavior = false;
+            this.listView2.View = System.Windows.Forms.View.List;
+            this.listView2.SelectedIndexChanged += new System.EventHandler(this.listView2_SelectedIndexChanged);
+            // 
             // button2
             // 
             this.button2.Location = new System.Drawing.Point(6, 388);
@@ -434,6 +418,7 @@
             this.button2.TabIndex = 101;
             this.button2.Text = "Make XML";
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // MainForm
             // 
@@ -441,7 +426,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(1093, 554);
+            this.ClientSize = new System.Drawing.Size(672, 453);
             this.Controls.Add(this.flowLayoutPanel2);
             this.Controls.Add(this.pictureBoxMain);
             this.Name = "MainForm";
@@ -456,11 +441,11 @@
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.flowLayoutPanel1.ResumeLayout(false);
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
             this.flowLayoutPanel2.ResumeLayout(false);
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
             this.groupBox6.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -494,7 +479,6 @@
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.TextBox textBoxName;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
-        private System.Windows.Forms.ListView listView1;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.CheckBox multiSprite;
@@ -507,4 +491,3 @@
         private System.Windows.Forms.Button button2;
     }
 }
-
