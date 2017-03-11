@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using System.Xml;
 
 public enum Pivot
@@ -27,19 +28,19 @@ namespace SpriteMaker
     {
         public string name;
 
-        public int x;
-        public int y;
-        public int width;
-        public int height;
+        int x;
+        int y;
+        int width;
+        int height;
 
-        public int left;
-        public int right;
-        public int top;
-        public int bottom;
+        int left;
+        int right;
+        int top;
+        int bottom;
 
-        public Pivot pivot;
+        Pivot pivot;
 
-        public int pixelsPerUnit;
+        int pixelsPerUnit;
 
         Rectangle rect;
 
@@ -59,16 +60,17 @@ namespace SpriteMaker
             this.bottom = b;
             this.rect = new Rectangle(x, y, w, h);
 
-            MouseControler.getInstance().pressed += (o, e) => { if(isInside(e.Location)){ MainForm.instance.setSelected(this); } };
+            //MouseControler.getInstance().pressed += (o, e) => { if(isInside(e.Location)){ MainForm.instance.setSelected(this); } };
 
         }
 
-        public static int fixY(int y, int height)
+        public static int fixY(int y)
         {
+            int height = MainForm.instance.height;
             return Math.Abs(y - height);
         }
 
-        static bool isInside(Point p, Rectangle rect)
+        public static bool isInside(Point p, Rectangle rect)
         {
             return p.X > rect.X && p.X < rect.X + rect.Width
                 && p.Y > rect.Y && p.Y < rect.Y + rect.Height;
@@ -99,10 +101,10 @@ namespace SpriteMaker
             return new Rectangle(rect.X, rect.Y, rect.Width, rect.Height);
         }
 
-        public void render(Graphics g, Pen p, int height, bool selected)
+        public void render(Graphics g, Pen p, bool selected)
         {
             Rectangle temp = CopyRect(rect);
-            temp.Y = fixY(temp.Y, height) - temp.Height;
+            temp.Y = fixY(temp.Y) - temp.Height;
 
             g.DrawRectangle(p, temp);
 
@@ -124,23 +126,141 @@ namespace SpriteMaker
             }
         }
 
-        bool isInside(Point p)
+        public bool isInside(Point p)
         {
-            return p.X > this.x && p.X < this.x + this.width 
-                && p.Y > this.y && p.Y < this.y + this.height;
+            Rectangle temp = CopyRect(rect);
+            temp.Y = fixY(temp.Y) - temp.Height;
+            return temp.Contains(p);
+            //return p.X > this.x && p.X < this.x + this.width 
+            //    && p.Y > this.y && (fixY(p.Y,MainForm.instance.height) - this.height) < this.y + this.height;
         }
 
        
+        public void update(Sprite s)
+        {
+            this.name = s.name;
+            this.x = s.x;
+            this.y = s.y;
+            this.width = s.width;
+            this.height = s.height;
+            this.pivot = s.pivot;
+            this.pixelsPerUnit = s.pixelsPerUnit;
 
-        void select()
+            this.left = s.left;
+            this.right = s.right;
+            this.top = s.top;
+            this.bottom = s.bottom;
+            this.rect = s.rect;
+        }
+        public void select()
         {
             //TODO: Setup callbacs for changeing size
             //MouseControler.getInstance().pressed += (o, e) => { if(isInside(e.Location){ doSomething(); } };
+
+            MouseControler.getInstance().hover -= changeCursor;
+            MouseControler.getInstance().hover += changeCursor2;
+        }
+
+        public void unSelect()
+        {
+            //TODO: Setup callbacs for changeing size
+            //MouseControler.getInstance().pressed -= (o, e) => { if(isInside(e.Location){ doSomething(); } };
+            MouseControler.getInstance().hover += changeCursor;
+            MouseControler.getInstance().hover -= changeCursor2;
+        }
+
+        private void changeCursor(object o, MouseEventArgs e)
+        {
+            if(isInside(e.Location) && Cursor.Current != Cursors.Hand)
+            {
+                Cursor.Current = Cursors.Hand;
+                
+            }
+            if(isInside(e.Location))
+            {
+                if(MouseControler.getInstance().getSubState() != MouseControler.SubState.Selecting)
+                {
+                    MouseControler.getInstance().setSubState(MouseControler.SubState.Selecting);
+                    //TODO: make it better if there is more sprites 
+                }
+            }
+            else
+            {
+                if(MouseControler.getInstance().getSubState() != MouseControler.SubState.Drawing)
+                {
+                    MouseControler.getInstance().setSubState(MouseControler.SubState.Drawing);
+                }
+                
+            }
+            
+        }
+
+        private void changeCursor2(object o, MouseEventArgs e)
+        {
+            if(isInside(e.Location) && Cursor.Current != Cursors.Hand)
+            {
+                Cursor.Current = Cursors.SizeAll;
+            }
+            if(isInside(e.Location))
+            {
+                if(MouseControler.getInstance().getSubState() != MouseControler.SubState.Moving)
+                {
+                    MouseControler.getInstance().setSubState(MouseControler.SubState.Moving);
+                    //TODO: make it better if there is more sprites 
+                }
+            }
+            else
+            {
+                if(MouseControler.getInstance().getSubState() != MouseControler.SubState.Drawing)
+                {
+                    MouseControler.getInstance().setSubState(MouseControler.SubState.Drawing);
+                }
+
+            }
+
         }
 
         public override string ToString()
         {
             return this.name;
+        }
+
+        public int getX()
+        {
+            return x;
+        }
+
+        public int getY()
+        {
+            return y;
+        }
+
+        public int getWidth()
+        {
+            return width;
+        }
+
+        public int getHeight()
+        {
+            return height;
+        }
+
+        public Pivot getPivot()
+        {
+            return pivot;
+        }
+
+        public int getPixelsPerUnit()
+        {
+            return pixelsPerUnit;
+        }
+
+        internal void setXY(Point pos)
+        {
+            x = pos.X;
+            y = fixY(pos.Y);
+            rect.X = pos.X;
+            rect.Y = fixY(pos.Y);
         }
     }
 }

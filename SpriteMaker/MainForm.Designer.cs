@@ -62,7 +62,7 @@
             this.button1 = new System.Windows.Forms.Button();
             this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
-            this.listView2 = new System.Windows.Forms.ListView();
+            this.listBox1 = new System.Windows.Forms.ListBox();
             this.button2 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxMain)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -388,7 +388,7 @@
             // 
             // groupBox6
             // 
-            this.groupBox6.Controls.Add(this.listView2);
+            this.groupBox6.Controls.Add(this.listBox1);
             this.groupBox6.Controls.Add(this.button2);
             this.groupBox6.Location = new System.Drawing.Point(218, 3);
             this.groupBox6.Name = "groupBox6";
@@ -398,17 +398,14 @@
             this.groupBox6.Text = "Sprites";
             this.groupBox6.Visible = false;
             // 
-            // listView2
+            // listBox1
             // 
-            this.listView2.Location = new System.Drawing.Point(6, 17);
-            this.listView2.MultiSelect = false;
-            this.listView2.Name = "listView2";
-            this.listView2.ShowGroups = false;
-            this.listView2.Size = new System.Drawing.Size(188, 365);
-            this.listView2.TabIndex = 10;
-            this.listView2.UseCompatibleStateImageBehavior = false;
-            this.listView2.View = System.Windows.Forms.View.List;
-            this.listView2.SelectedIndexChanged += new System.EventHandler(this.listView2_SelectedIndexChanged);
+            this.listBox1.FormattingEnabled = true;
+            this.listBox1.Location = new System.Drawing.Point(6, 17);
+            this.listBox1.Name = "listBox1";
+            this.listBox1.Size = new System.Drawing.Size(188, 368);
+            this.listBox1.TabIndex = 102;
+            this.listBox1.Click += new System.EventHandler(this.listBox1_Click);
             // 
             // button2
             // 
@@ -487,7 +484,7 @@
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel2;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.GroupBox groupBox6;
-        private System.Windows.Forms.ListView listView2;
         private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.ListBox listBox1;
     }
 }

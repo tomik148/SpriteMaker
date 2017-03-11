@@ -13,16 +13,30 @@ namespace SpriteMaker
         {
             Down,
             Up,
-            Holding
+            Holding,
+            Hovering
         }
-          
+
+        public enum SubState
+        {
+            Drawing,
+            Selecting,
+            Moving,
+            Scaling
+        }
+
         State previous = State.Up;
         State current = State.Up;
+
+        SubState currentSubState = SubState.Drawing;
+
+
         static MouseControler _instance;
 
         public event MouseEventHandler pressed;
         public event MouseEventHandler released;
         public event MouseEventHandler holding;
+        public event MouseEventHandler hover;
 
         private MouseControler() { }
 
@@ -53,16 +67,32 @@ namespace SpriteMaker
                         buttonPressed(sender, e);
                     }
                     break;
+                case State.Hovering:
                 case State.Up:
                     if(previous == State.Down || previous == State.Holding)
                     {
+                        current = State.Up;
                         buttonReleased(sender, e);
                     }
-                    current = State.Up;
+                    else
+                    {
+                        buttonHovering(sender, e);
+                    }
+
                     break;
                 default:
                     break;
             }
+        }
+
+        public void setSubState(SubState s)
+        {
+            currentSubState = s;
+            Console.WriteLine("setSubState -- changed to " + s.ToString());
+        }
+        public SubState getSubState()
+        {
+            return currentSubState;
         }
 
         private void buttonPressed(object sender, MouseEventArgs e)
@@ -80,6 +110,12 @@ namespace SpriteMaker
         private void buttonHolding(object sender, MouseEventArgs e)
         {
             holding?.Invoke(sender, e);
+            //Console.WriteLine("buttonHolding -- Invoked");
+        }
+
+        private void buttonHovering(object sender, MouseEventArgs e)
+        {
+            hover?.Invoke(sender, e);
             //Console.WriteLine("buttonHolding -- Invoked");
         }
 
