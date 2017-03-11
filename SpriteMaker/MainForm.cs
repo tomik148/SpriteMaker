@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
+
 
 namespace SpriteMaker
 {
@@ -15,10 +17,14 @@ namespace SpriteMaker
     {
         public static MainForm instance;
         string imagePath = "";
-        Image image;
         bool multiSprites = false;
-        List<Sprite> sprites;
         bool dragging = false;
+        Sprite selected;
+        Point startOfDrag;
+
+
+        Image image;
+        List<Sprite> sprites;
 
         public MainForm()
         {
@@ -26,11 +32,26 @@ namespace SpriteMaker
             selectPivot.DataSource = Enum.GetValues(typeof(Pivot));
             sprites = new List<Sprite>();
             instance = this;
+
+            MouseControler.getInstance().released += (o, e) => updateWH(e, true);
+            MouseControler.getInstance().pressed += (o, e) => updateXY(e);
+            MouseControler.getInstance().holding += (o, e) => updateWH(e, false);
+            MouseControler.getInstance().holding += (o, e) => pictureBoxMain.Invalidate();
+            MouseControler.getInstance().released += (o, e) => pictureBoxMain.Invalidate();
+            MouseControler.getInstance().pressed += (o, e) => instance.startOfDrag = e.Location;
         }
 
-        public int fixY(int y)
+        void debugInput()
         {
-            return Math.Abs(y - pictureBoxMain.Height);
+            textBoxName.Text = "Bla";
+            textBoxX.Text = "0";
+            textBoxY.Text = "0";
+            textBoxW.Text = "10";
+            textBoxH.Text = "10";
+
+            selectPivot.SelectedIndex = 0;
+
+            textBox1.Text = "10";
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
@@ -65,7 +86,7 @@ namespace SpriteMaker
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-
+            debugInput();//TODO: delete
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -85,10 +106,11 @@ namespace SpriteMaker
                 if(addSpriteToList())
                 {
                     makeXMLFile();
+                    resetTextBoxes();
                 }
             }
-
-            resetTextBoxes();
+            pictureBoxMain.Invalidate();
+            
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -155,9 +177,7 @@ namespace SpriteMaker
                 return false;
             }
 
-            Rectangle rect = new Rectangle();
-
-            Sprite s = new Sprite(textBoxName.Text, int.Parse(textBoxX.Text), int.Parse(textBoxY.Text), int.Parse(textBoxW.Text), int.Parse(textBoxH.Text), (Pivot)selectPivot.SelectedValue, int.Parse(textBox1.Text), rect);
+            Sprite s = new Sprite(textBoxName.Text, int.Parse(textBoxX.Text), int.Parse(textBoxY.Text), int.Parse(textBoxW.Text), int.Parse(textBoxH.Text), (Pivot)selectPivot.SelectedValue, int.Parse(textBox1.Text));
 
             Sprite f = sprites.Find((x) => { return x.name == textBoxName.Text; });
             if(f != null)
@@ -181,6 +201,15 @@ namespace SpriteMaker
             selectPivot.SelectedIndex = (int)s.pivot;
 
             textBox1.Text = s.pixelsPerUnit.ToString();
+
+            //TODO: DrawSelected
+        }
+
+        public void setSelected(Sprite s)
+        {
+            selected = s;
+            loadSprite(s);
+            pictureBoxMain.Invalidate();
         }
 
         void resetTextBoxes()
@@ -193,6 +222,11 @@ namespace SpriteMaker
             textBoxH.Text = "0";
 
             selectPivot.SelectedIndex = 0;
+
+            if(sprites.Find(x => x.name == selected?.name) != null)
+            {
+                listView2.Items[sprites.IndexOf(selected)+1].Selected = true;
+            }
 
             textBox1.Text = "0";
         }
@@ -224,13 +258,33 @@ namespace SpriteMaker
             resetTextBoxes();
         }
 
+        void lodeXMLFile(string xmlPath)
+        {
+            if(xmlPath == "" && File.Exists(xmlPath))
+            {
+                return;
+            }
+            XmlReader xr = XmlReader.Create(xmlPath);
+            while(xr.Read())
+            {
+                if(xr.Name == "Sprite")
+                {
+                    //TODO: Pivot
+                    Sprite s = new Sprite(xr.GetAttribute("name"), int.Parse(xr.GetAttribute("x")), int.Parse(xr.GetAttribute("y")), int.Parse(xr.GetAttribute("w")), int.Parse(xr.GetAttribute("h")), Pivot.Center, int.Parse(xr.GetAttribute("pixelPerUnit")));
+                    sprites.Add(s);
+                }
+            }
+        }
+
         private void listView2_SelectedIndexChanged(object sender, EventArgs e)
         {
             int[] a = new int[1];
             listView2.SelectedIndices.CopyTo(a, 0);
             int index = a[0];
-            loadSprite(sprites[index]);
-            drawRectangle(sprites[index].getRect());
+            setSelected(sprites[index]);
+            loadSprite(selected);
+
+            drawRectangle(selected);  //TODO: remove
         }
 
         private void textBoxName_TextChanged(object sender, EventArgs e)
@@ -250,35 +304,61 @@ namespace SpriteMaker
             button1.Text = "Update Sprite";
         }
 
-        void drawRectangle(Rectangle rect)
+        void drawRectangle(Sprite s)
         {
-            Graphics g = pictureBoxMain.CreateGraphics();
-            g.FillRectangle(Brushes.Red, rect.X, rect.Y, 10, 10);
-            g.FillRectangle(Brushes.Blue, rect.X, rect.Y + rect.Height, 10, 10);
-            g.FillRectangle(Brushes.Green, rect.X + rect.Width, rect.Y, 10, 10);
-            g.FillRectangle(Brushes.Yellow, rect.X + rect.Width, rect.Y + rect.Height, 10, 10);
+            //pictureBoxMain.Invalidate();
+            //Graphics g = pictureBoxMain.CreateGraphics();
+            //g.Clear(Color.Black);
+            //pictureBoxMain.
+            //s.render(g, Pens.Black, pictureBoxMain.Height);
 
-            g.DrawRectangle(Pens.Black, rect);
+            //g.FillRectangle(Brushes.Red, rect.X, rect.Y, 10, 10);
+            //g.FillRectangle(Brushes.Blue, rect.X, rect.Y + rect.Height, 10, 10);
+            //g.FillRectangle(Brushes.Green, rect.X + rect.Width, rect.Y, 10, 10);
+            //g.FillRectangle(Brushes.Yellow, rect.X + rect.Width, rect.Y + rect.Height, 10, 10);
+
+            //g.DrawRectangle(Pens.Black, s.getRect.X , Sprite.fixY(rect.Y,pictureBoxMain.Height) - rect.Height , rect.Width , rect.Height);
+        }
+
+        void drawRectangle(Graphics g, Rectangle rect)
+        {
+            //pictureBoxMain.Invalidate();
+            //Graphics g = pictureBoxMain.CreateGraphics();
+            //g.Clear(Color.Black);
+            //pictureBoxMain.
+            //s.render(g, Pens.Black, pictureBoxMain.Height);
+
+            //g.FillRectangle(Brushes.Red, rect.X, rect.Y, 10, 10);
+            //g.FillRectangle(Brushes.Blue, rect.X, rect.Y + rect.Height, 10, 10);
+            //g.FillRectangle(Brushes.Green, rect.X + rect.Width, rect.Y, 10, 10);
+            //g.FillRectangle(Brushes.Yellow, rect.X + rect.Width, rect.Y + rect.Height, 10, 10);
+
+            g.DrawRectangle(Pens.Black, rect.X, Sprite.fixY(rect.Y, pictureBoxMain.Height) - rect.Height, rect.Width, rect.Height);
         }
 
         private void pictureBoxMain_MouseDown(object sender, MouseEventArgs e)
         {
             dragging = true;
-            textBoxX.Text = e.X.ToString();
-            textBoxY.Text = fixY(e.Y).ToString();
+            MouseControler.getInstance().Update(MouseControler.State.Down, sender, e);
         }
 
         private void pictureBoxMain_MouseUp(object sender, MouseEventArgs e)
         {
+            MouseControler.getInstance().Update(MouseControler.State.Up, sender, e);
             dragging = false;
-            updateWH(e, true);
+
         }
 
+        void updateXY(MouseEventArgs e)
+        {
+            textBoxX.Text = e.X.ToString();
+            textBoxY.Text = Sprite.fixY(e.Y, pictureBoxMain.Height).ToString();
+        }
         void updateWH(MouseEventArgs e, bool validate)
         {
             int w = e.X - int.Parse(textBoxX.Text);
-            int h = fixY(e.Y) - int.Parse(textBoxY.Text);
-            if (validate)
+            int h = Sprite.fixY(e.Y, pictureBoxMain.Height) - int.Parse(textBoxY.Text);
+            if(validate)
             {
                 validateWH(ref w, ref h);
             }
@@ -289,24 +369,63 @@ namespace SpriteMaker
 
         void validateWH(ref int w, ref int h)
         {
-            if (w < 0)
+            if(w < 0)
             {
                 textBoxX.Text = (int.Parse(textBoxX.Text) + w).ToString();
                 w = Math.Abs(w);
             }
 
-            if (h < 0)
+            if(h < 0)
             {
                 textBoxY.Text = (int.Parse(textBoxY.Text) + h).ToString();
                 h = Math.Abs(h);
             }
         }
 
+        Rectangle getRect()
+        {
+            
+            // = new Rectangle(int.Parse(textBoxX.Text), int.Parse(textBoxY.Text), int.Parse(textBoxW.Text), int.Parse(textBoxH.Text));
+            int x = int.Parse(textBoxX.Text), y = int.Parse(textBoxY.Text), w = int.Parse(textBoxW.Text), h = int.Parse(textBoxH.Text);
+            if(w < 0)
+            {
+                x += w;
+                w *= -1; 
+            }
+
+            if(h < 0)
+            {
+                y += h;
+                h *= -1;
+            }
+            Rectangle rect = new Rectangle(x,y,w,h);
+            return rect;
+        }
+
         private void pictureBoxMain_MouseMove(object sender, MouseEventArgs e)
         {
-            if (dragging)
+
+            if(dragging)
             {
-                updateWH(e, false);
+                MouseControler.getInstance().Update(MouseControler.State.Holding, sender, e);
+                //updateWH(e, false);
+            }
+        }
+
+        private void pictureBoxMain_Paint(object sender, PaintEventArgs e)
+        {
+            //if(selected != null && sprites.Contains(selected))
+            //{
+            //    sprites.Find(x=>x==selected).render(e.Graphics, Pens.Black, pictureBoxMain.Height);
+            //}
+            
+
+
+            drawRectangle(e.Graphics , getRect());
+
+            foreach(var sprite in sprites)
+            {
+                sprite.render(e.Graphics, Pens.Black, pictureBoxMain.Height,sprite == selected);
             }
         }
     }
