@@ -30,6 +30,7 @@ namespace SpriteMaker
 
         SubState currentSubState = SubState.Drawing;
 
+        Cursor currentCursor = Cursors.Cross;
 
         static MouseControler _instance;
 
@@ -39,7 +40,6 @@ namespace SpriteMaker
         public event MouseEventHandler hover;
 
         private MouseControler() { }
-
         static public MouseControler getInstance()
         {
             if(_instance == null)
@@ -83,16 +83,33 @@ namespace SpriteMaker
                 default:
                     break;
             }
+            Cursor.Current = currentCursor;
         }
 
         public void setSubState(SubState s)
         {
-            currentSubState = s;
-            Console.WriteLine("setSubState -- changed to " + s.ToString());
+            if(currentSubState != s)
+            {
+                currentSubState = s;
+                Console.WriteLine("setSubState -- changed to " + s.ToString());
+            }
         }
         public SubState getSubState()
         {
             return currentSubState;
+        }
+
+        public void setCursor(Cursor c)
+        {
+            if(currentCursor != c)
+            {
+                currentCursor = c;
+                //Console.WriteLine("setCursor -- changed to " + c.ToString());
+            }
+        }
+        public Cursor getCursor()
+        {
+            return currentCursor;
         }
 
         private void buttonPressed(object sender, MouseEventArgs e)

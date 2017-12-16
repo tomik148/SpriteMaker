@@ -135,7 +135,7 @@ namespace SpriteMaker
             //    && p.Y > this.y && (fixY(p.Y,MainForm.instance.height) - this.height) < this.y + this.height;
         }
 
-       
+
         public void update(Sprite s)
         {
             this.name = s.name;
@@ -152,6 +152,59 @@ namespace SpriteMaker
             this.bottom = s.bottom;
             this.rect = s.rect;
         }
+
+        public void registerCallbacks()
+        {
+            MouseControler.getInstance().hover += setState;
+            MouseControler.getInstance().released += setState;
+        }
+
+        void setState(object o, MouseEventArgs e)
+        {
+            
+            //Sprite atPosition = MainForm.instance.getSpriteAt(e.Location);
+            //if(isInside(e.Location))
+            if(MainForm.instance.isSpriteAt(e.Location))
+            {
+                Sprite at = MainForm.instance.getSpriteAt(e.Location);
+                bool isSelected = MainForm.instance.getSelected() == at;
+                //if(Cursor.Current != Cursors.Hand)
+                if(MouseControler.getInstance().getCursor() != Cursors.Hand)
+                {
+                    if(!isSelected)
+                    {
+                        MouseControler.getInstance().setCursor(Cursors.Hand);
+                    }
+                    else
+                    {
+                        MouseControler.getInstance().setCursor(Cursors.SizeAll);
+                    }
+                }
+
+                if(MouseControler.getInstance().getSubState() != MouseControler.SubState.Selecting)
+                {
+                    if(!isSelected)
+                    {
+                        MouseControler.getInstance().setSubState(MouseControler.SubState.Selecting);
+                        //TODO: make it better if there is more sprites 
+                    }
+                    else
+                    {
+                        MouseControler.getInstance().setSubState(MouseControler.SubState.Moving);
+                        //TODO: make it better if there is more sprites 
+                    }
+                }
+            }
+            else
+            {
+                if(MouseControler.getInstance().getSubState() != MouseControler.SubState.Drawing)
+                {
+                    MouseControler.getInstance().setSubState(MouseControler.SubState.Drawing);
+                }
+            }
+        }
+
+        /*
         public void select()
         {
             //TODO: Setup callbacs for changeing size
@@ -197,6 +250,7 @@ namespace SpriteMaker
 
         private void changeCursor2(object o, MouseEventArgs e)
         {
+
             if(isInside(e.Location) && Cursor.Current != Cursors.Hand)
             {
                 Cursor.Current = Cursors.SizeAll;
@@ -218,7 +272,7 @@ namespace SpriteMaker
 
             }
 
-        }
+        }*/
 
         public override string ToString()
         {
@@ -261,6 +315,10 @@ namespace SpriteMaker
             y = fixY(pos.Y);
             rect.X = pos.X;
             rect.Y = fixY(pos.Y);
+        }
+        ~Sprite()
+        {
+            //unregister all callbacks!!
         }
     }
 }

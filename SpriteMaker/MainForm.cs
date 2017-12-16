@@ -173,7 +173,7 @@ namespace SpriteMaker
             resetTextBoxes();
         }
 
-        internal Sprite getSelected()
+        public Sprite getSelected()
         {
             return selected;
         }
@@ -363,7 +363,7 @@ namespace SpriteMaker
         Point lastSelectedPoint;
         List<Sprite> spritesAtLastPoint;
         int index;
-        private Sprite getSpriteAt(Point location)
+        public Sprite getSpriteAt(Point location)
         {
             if(lastSelectedPoint == location)
             {
@@ -384,7 +384,17 @@ namespace SpriteMaker
             return spritesAtLastPoint.ElementAt(index);
         }
 
-
+        public bool isSpriteAt(Point location)
+        {
+            foreach(var sprite in sprites)
+            {
+                if(sprite.isInside(location))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
 
         void resetTextBoxes()
         {
@@ -438,9 +448,9 @@ namespace SpriteMaker
         }
         public void setSelected(Sprite s)
         {
-            selected?.unSelect();
+            //selected?.unSelect();
             selected = s;
-            s.select();
+            //s.select();
 
             loadSprite(s);
             
@@ -501,6 +511,7 @@ namespace SpriteMaker
             }
 
             Sprite s = new Sprite(textBoxName.Text, int.Parse(textBoxX.Text), int.Parse(textBoxY.Text), int.Parse(textBoxW.Text), int.Parse(textBoxH.Text), (Pivot)selectPivot.SelectedValue, int.Parse(textBox1.Text));
+            s.registerCallbacks();
 
             var list = sprites.Where(x => x.name == s.name).ToList();
             if(list.Count > 0)
@@ -511,7 +522,10 @@ namespace SpriteMaker
             {
                 sprites.Add(s);
             }
-            
+
+            Console.WriteLine("addSpriteToList -- num of sprites in list: " + sprites.Count);
+
+
             relodeListView();
             setSelected(s);
             return true;
